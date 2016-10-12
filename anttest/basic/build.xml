@@ -1,0 +1,119 @@
+<?xml version="1.0" ?>
+<project name="ant-project" default="print-dir" basedir="." >
+    <description> 
+		A simple project introducing the use of descriptive tags in Ant build files.     
+	</description>
+	<!-- 
+	http://blog.csdn.net/qiyueqinglian/article/details/49821735
+	在<project>里<target>外定义的变量，该xml里的所有<target>都可见这个变量，调用的别的xml里的<target>也可见。
+在<target>里定义的变量，跟这个<target>无关的<target>不可见这个变量， 
+把这个<target>作为depends和被调用的<target>可见这个变量。
+	 -->
+	<!-- 使用外部变量配置项 -->
+	<property file="ant/build.properties"/>
+    
+    <!-- 自定义属性,赋值后不可改变-->
+    <property name="metal" value="beryllium"/>
+    
+	<!-- description:为target添加描述注释 --> 
+    <target name="print-dir" description="Initialize Argon database">
+        <!-- 使用project上指定的 属性basedir echo:会输出到控制台-->
+        <echo message="The base dir is: ${basedir}" />
+        <!-- 使用自定义属性 -->
+        <echo message="The 自定义属性 is: dsfsdfds.${metal}.db"></echo>
+        
+        <!-- Java 环境设置用于运行 Ant 的所有系统属性 -->
+        <!-- 
+        <echo message=" ${user.home}" />
+         -->
+         <!-- Ant中预定义属性 -->
+         <!--    
+         <echo message=" ${ant.version}" />
+          -->
+        <!-- 不同系统中的路径自动转换 location代替value-->
+        <property name="database-file" location="archive\databases\${metal}.db"/>   
+          
+    </target>
+    
+    
+    <tstamp>  
+     <format property="TODAY_UK" pattern="d-MMMM-yyyy" locale="en"/>  
+   </tstamp>  
+   <tstamp>  
+     <format property="TODAY_CN" pattern="d-MMMM-yyyy" locale="zh"/>  
+   </tstamp>  
+   <tstamp>  
+       <format property="touch.time" pattern="MM-dd-yyyy hh:mm aa" offset="-5" unit="hour"/>  
+   </tstamp>  
+   <tstamp>
+       <format  property="zdytime" pattern="yymmddhhmmss" locale="zh"></format>
+   </tstamp>
+   <target name="timestampTarget" >  
+         <echo message="${DSTAMP}"/>  
+         <echo message="${TODAY_UK}" />  
+         <echo message="${TODAY_CN}" />  
+         <echo message="${touch.time}" />
+         <echo>${zdytime}</echo>  
+   </target>
+    
+    
+    
+    <target name="init" description="Initialize Argon database">
+                 <!-- perform initialization steps here -->
+                 <echo message="init start"></echo>
+    </target>
+    <!-- 定义依赖关系 -->
+    <target name="preprocess" depends="init">
+        <echo message="preprocess start"></echo>
+    </target>  
+    <target name="compile" depends="init,preprocess">
+        <echo message="compile start"></echo>
+    </target> 
+    <target name="package" depends="compile">
+        <echo message="package start"></echo>
+    </target>
+    
+    <!-- 命令行定义 -->
+    <!-- 
+    -buildfile <file> 参数（-f <file> 是其简写形式）
+    Ant -buildfile build.xml init 
+     -->
+     <!-- 
+     	在运行前指定属性的值
+     -Dmetal=beryllium
+      -->
+      
+     
+      <target name="callSub">
+          <!--调用子配置文件  -->
+          <ant antfile="ant/subbuild.xml" target="showMessage" inheritAll="false">
+              <!-- 传入的变量 -->
+              <property name="message" value="Hello from parent build"/>
+          </ant>     
+      </target>
+      <target name="使用cvs知识库">
+          <!-- 
+          CVS 是 concurrent versions system（并发版本控制系统） 的缩写。它是一个源代码控制系统，设计用于跟踪许多不同开发人员做出的更改。
+           <project name="CVS Extract" default="extract" basedir="."> 
+           <property name="cvsRoot" value=":pserver:anonymous@dev.eclipse.org:/home/eclipse"/>
+    		 <target name="extract"> 
+       		 <cvs cvsRoot="${cvsRoot}"  package="org.eclipse.swt.examples" dest="${basedir}"/>
+     			</target> 
+			</project>
+           
+           -->
+      </target>
+      <target name="创建自定义的任务">
+          <!-- 
+         	 为实现一个简单的自定义任务，我们所需做的就是扩展 org.apache.tools.ant.Task 类，并重写 execute() 方法
+         	 使用自定义任务
+         	 <taskdef name="filesorter" classname="FileSorter" classpath="."/>
+         	 <target name="main">
+         	       <filesorter file="input.txt" tofile="output.txt"/>//file tofile 为filesorter类中定义的两个方法,模拟setter
+         	 </target>
+           -->
+      </target>
+      <target name="bianyi">
+     <ant antfile="buildswf.xml" target="showMessage" inheritAll="false"></ant>
+      </target>
+</project>

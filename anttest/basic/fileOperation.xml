@@ -1,0 +1,90 @@
+<?xml version="1.0"?>  
+  <project name="operation_file" basedir=".">
+      <property file="./build.properties" />
+       <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${ANT_HOME}/lib/ant-contrib.jar"/>
+      <target name="tihuan">
+          
+         <!-- 修改当前文件夹下的所有文件内容中的匹配内容
+           <replace dir="./" token="test" value="test2"/>
+            -->
+          <replace dir="./" includes="test.txt" encoding="UTF-8">
+			<replacefilter token="你好" value="你好  撒的发生"/>
+			<replacefilter token="hello" value="hello english"/>
+		</replace>
+		<!-- 替换文件中的标记
+             token 属性指定要查找的字符串，value 属性指定一个新的字符串，查找到的标记字符串的所有实例都被替换为这个新的字符串。
+             	替换操作将在文件本身之内的适当位置进行。为了提供更详细的输出，可把 summary 属性设置为 true。这将导致该任务输出找到和替换的标记字符串实例的数目。
+             <replace file="input.txt" token="old" value="new"/> 
+          -->
+          
+        <replaceregexp byline="true">  <!-- byline="true" 表示替换所有满足条件的字符串，若设为false，则只会替换第一个满足正则表达式的字符串 -->
+				<regexp pattern="[1-9][0-9]{4,}"/>  <!-- 正则表达式 -->
+				<substitution expression="6356351"/>  <!--  表示将满足条件字符串替换成6356351 -->
+				<fileset file="test.txt"/>  <!-- 在这个文件中进行查找和替换，你也可以设置为查找多个文件 -->
+		</replaceregexp> 
+      </target>
+      <target name="截取字符串">
+<!-- input: 要匹配的文本
+	regexp: 正则匹配
+	select:选取匹配的结果,并在这里进行重新组装  
+	分组的意思是用()隔离的正则表达式
+		\0 代表整个input的值
+		\1 代表第一个分组
+		\2 代表第二个分组
+		select="\0.DEF.\1.\2"
+	casesensitive:是否区分大小写
+	replace:将匹配到的结果替换为指定的内容
+	override:是否可以更改property的内容
+	defaultValue:如果没有找到匹配的值,默认值是多少
+ -->
+          <propertyregex property="project.db.version"  
+                  input="package.1.namedsfsdfpackage.1.name23423423package.1.nameasf"
+                  regexp="(package)\.\d\.(nam)(e)"  
+                  casesensitive="false"
+                  override="true"
+                  select="\0" 
+                  defaultValue=""
+                  /> 
+                  <echo message="${project.db.version}"></echo>
+      </target>
+      <!-- 读取文件内容  一次读取完 -->
+      <target name="read">
+          <loadfile property="test"
+      		srcFile="./test.txt"
+      		encoding="UTF-8"/>
+   		 <echo message="${test}"/>
+      </target>
+      <!-- 添加一行到文本 
+      overwrite:即使源文件最新,也是否写入的设定
+      -->
+      <target name="add">
+            <concat destfile ="test.txt" overwrite="no" encoding="UTF-8" append="yes">&#xD;&#xA;你好，世界！</concat>
+      </target>
+      <target name="字符串匹配">
+         <property name="Apple" value="Apple"/>  
+		<property name="string.a" value="I'm a red ${Apple}"/>  
+		<property name="string.b" value="I'm a flying Bee"/>  
+		<condition property="a.equals.b" value="true" else="false">  
+		    <!-- 
+		    arg1/arg2:指定两个用来对比的字符串，这两个参数必须有被赋值。
+			casesensitive:设定在匹配过程中是否区分大小写，默认值为true区分大小写。
+			trim:在匹配过程中是否去除空格再比较。默认为false。
+		     -->
+			<equals arg1="${string.a}" arg2="${string.b}" trim="false"/>  
+		</condition>  
+		<condition property="isContains" value="true" else="false">  
+		    <!-- 
+		    string:指定被搜索的字符串。
+			substring:指定搜索的字符串。
+			casesensitive:是否区分大小写。默认为true区分大小写。
+			 -->
+			<contains string="${string.a}" substring="${Apple}"/>  
+		</condition>  
+		<condition property="isMatches" value="true" else="false">
+		  <matches string="string.b" pattern="ings" />
+		</condition>
+ 		<echo message="string.a equals string.b: ${a.equals.b}"/>
+		<echo message="string.a contains Apple: ${isContains}"/>
+		<echo message="string.b contains ing: ${isMatches}"/>
+      </target>
+  </project>

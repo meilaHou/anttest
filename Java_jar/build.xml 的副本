@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="jarbuild" basedir=".">
+	<!-- 
+	path classpath 等说明
+	http://www.cnblogs.com/itech/archive/2011/11/01/2231206.html
+	 -->
+	<path id="lib_classpath">
+        <fileset dir="${basedir}/">
+            <include name="testjava.jar"/>
+        </fileset>
+    </path>
+    <!-- 编译指定的java项目 -->
+	<target name="build">
+		<javac 
+		srcdir="src"
+		destdir="build"
+		debug="on"
+		source="1.7"
+		 includeAntRuntime="false" 
+		/>
+	</target>
+	<!-- 打包指定的java class -->
+	<target depends="build" name="jar"> 
+	    <delete file="testjava.jar"></delete>  
+            <jar basedir="./build" destfile="testjava.jar">   
+                  <manifest>   
+                        <attribute name="Main-Class" value="Test"/>   
+                        <attribute name="Class-Path" value=""/>   
+                  </manifest>
+            </jar>   
+      </target>
+      <!-- 调用外部jar包 -->
+      <target name="java_Test">
+           <java classname="Test" classpathref="lib_classpath">
+           <arg value="123"/>
+           <arg value="name:hello"/>
+           <arg value="age:1"/>
+           <arg value="port:000"/>
+        </java>
+      </target>
+</project>

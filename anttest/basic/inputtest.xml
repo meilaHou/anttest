@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="buildswf" default="build" basedir=".">
+	<property file="./build.properties" />
+	<target name="build">
+	    
+	</target>
+	<target name="task1" if="do.1">
+        <echo>execute task 1</echo>
+    </target>
+ 
+    <target name="task2" if="do.2">
+        <echo>execute task 2</echo>
+    </target>
+     
+    <target name="task3" if="do.3">
+        <echo>execute task 3</echo>
+    </target>    
+     
+    <target name="showTasks" >
+        <echo>1 task1</echo>
+        <echo>2 task2</echo>
+        <echo>3 task3</echo>
+ 
+        <input validargs="1,2,3" addproperty="option" defaultvalue="1">place your option</input>
+         
+        <condition property="do.1">
+            <equals arg1="1" arg2="${option}"/>
+        </condition>
+        <antcall target="task1"/>
+         
+        <condition property="do.2">
+            <equals arg1="2" arg2="${option}"/>
+        </condition>
+        <antcall target="task2"/>
+         
+        <condition property="do.3">
+            <equals arg1="3" arg2="${option}"/>
+        </condition>
+        <antcall target="task3"/>
+         
+    </target>
+    <target name="test">
+        <input
+    message="All data is going to be deleted from DB continue (y/n)?"
+    validargs="y,n"
+    addproperty="do.delete"
+  />
+  <condition property="do.abort">
+    <equals arg1="n" arg2="${do.delete}"/>
+  </condition>
+  <fail if="do.abort">Build aborted by user.</fail>
+    </target>
+    <target name="entername">
+        <input
+		    message="Please enter db-username:"
+		    addproperty="db.user"
+		  />
+        <echo>${db.user}</echo>
+    </target>
+</project>

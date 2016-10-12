@@ -1,0 +1,83 @@
+<?xml version="1.0"?>  
+  <project name="file_system" basedir=".">
+      <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${ANT_HOME}/lib/ant-contrib.jar"/>
+      <property file="./build.properties" />
+       <!-- 文件系统操作 -->
+      <target name="filesystem" >
+          <!-- 创建文件夹 
+          <mkdir dir="archive/metals/zinc"/>
+          -->
+          <!-- 删除文件夹 
+          <delete dir="archive/metals/zinc"/>
+          -->
+          <!-- 拷贝文件
+          <copy file="src/Test.java" tofile="src/TestCopy.java"/>
+           -->
+           <!-- 重命名文件
+           <move file="src/Test.java" tofile="src/TestCopy.java"/>
+            -->
+            <!-- 复制文件
+            <copy file="src/Test.java" todir="archive"/>    
+             -->
+             <!-- 移动文件
+             <move file="src/Test.java" todir="archive"/>
+              -->
+              <!-- 删除一个文件-->
+			<!-- <delete file="other/Test.java"/> -->
+			
+			
+             <!-- 创建压缩包
+             默认情况下，Ant 仅输出它执行的移动和复制操作的摘要，包括诸如已移动或复制的文件的数量等信息。如果想看到更详细的信息，包括涉及的文件名称等，您可以将 verbose 属性设置为true。
+             <zip destfile="output.zip" basedir="output"/>
+             <gzip src="output.tar" zipfile="output.tar.gz"/>
+              -->
+             <!--解压
+             还可以包括 overwrite 属性来控制覆盖行为。默认设置是覆盖与正在被提取的归档文件中的条目相匹配的所有现有文件。相关的任务名称是 untar、unjar、gunzip 和 bunzip2。
+             	<unzip src="output.tar.gz" dest="extractDir"/> 
+              -->
+             
+      </target>
+      <target name="模式匹配">
+          <!--  -->
+<!--           <copy todir="archive">    -->
+		<foreach list="" target="loops" param="file.full.name" delimiter=",">
+              <fileset dir="./scp" >  
+                  <!--
+                   include:包含;exclude:排除
+                   	默认排除文件有:CVS 的目录相匹配的条目, 以 ~ 字符结尾的文件 
+                   	如果确实想无例外地选择 所有 文件和目录，可以将文件集的 defaultexcludes 属性设置为 no
+                  -->    
+                  <include name="Index*.swf"/>   
+              </fileset>
+        </foreach>
+<!--           </copy> -->
+      </target>
+      <target name="loops">
+		  <echo>${file.full.name}</echo>
+  	  </target>
+      <target name="选择器">
+          <!-- 
+           •  size：这个选择器用于根据文件的字节大小选择文件（除非使用 units 属性来指定了不同的单位）。when 属性用于设置比较的性质（less、more 或者 equal），value 属性定义每个文件将与之作比较的目标大小。 
+           •  contains：只有包含给定文本字符串（由text 属性指定）的文件才匹配这个选择器。默认情况下，查找操作是大小写敏感的；添加casesensitive="no" 可以改变默认设置。  
+           •  filename：name 属性指定文件名要与之匹配的模式。它本质上与 include 元素相同，以及与指定了negate="yes" 时的 exclude 元素相同。  
+           •  present：从当前目录结构中选择如下文件：它们与指定的 targetdir 目录中的文件具有相同的名称和相对目录结构。  
+           •  depend：这个选择器与 present 选择器具有相同的效果，只不过匹配的文件被限制到相对于 targetdir 位置中的对应文件来说，最近已修改过的那些文件。  
+           •  date：这个选择器基于其最后修改日期选择文件。when 属性指定作比较的性质是 before、after 还是 equal，datetime 属性指定与之作比较的日期和时间，这个日期和时间具有给定的固定格式 MM/DD/YYYY HH:MM AM_or_PM。注意 Windows 平台上有一个内置的 2 秒偏移，以允许底层文件系统的不精确性 —— 这可能导致匹配的文件数量超过预期。允许的回旋时间量可以使用 granularity 属性来更改（以毫秒为单位来指定）。  
+           •  depth：这个选择器检查每个文件的目录结构层次数目。min 和/或 max 属性用于选择具有想要的目录层次数目的的文件。
+           
+           
+           -->
+      </target>
+      <target name="选择器容器">
+          <!-- 
+          	还可以通过在一个选择器 容器 内嵌套一个或多个选择器来组合选择器。 最常用的选择器容器 and 仅选择它包含的所有选择器都选择了的文件。其他选择其容器包括 or、not、none 和 majority。 
+          
+          <fileset dir="dir">
+               <and>
+                    <contains text="hello"/>
+                    <size value="512" when="more"/>
+                </and>
+          </fileset>
+           -->
+      </target>
+  </project>

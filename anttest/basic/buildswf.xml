@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+ <project name="testProjectFlex" default="build" basedir=".">
+  <property file="ant/build.properties" />
+  <!--定义任务的库引用路径，比如下面我们用到了mxmlc，必须让Ant知道去哪里寻找这个任务的定义，包括类名
+ 称和classpath。这里我们配置了4个，实际上用到了3个，即调用mxmlc完成编译，调用html-wrapper对SWF进行HTML包裹，
+ 调用asdoc生成代码文档。compc是用来编译库(SWC)文件，这里我们没有用到 -->
+  <taskdef name="mxmlc" classname="flex.ant.MxmlcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef name="compc" classname="flex.ant.CompcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef name="html-wrapper" classname="flex.ant.HtmlWrapperTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef name="asdoc" classname="flex.ant.AsDocTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${ANT_HOME}/lib/ant-contrib.jar"/>
+  <!-- 定义ant存放位置  -->
+  <property name="ant.lib.dir" value="${FLEX_HOME}/ant/lib" />
+  <!-- 初始化时间格式,以便使用 -->
+  <tstamp>
+  <format property="TODAY" pattern="yy.mm.dd" />
+  </tstamp>
+  <!-- 导入ant支持包 -->
+  <path id="ant.classpath">
+  <fileset dir="${ant.lib.dir}">
+  <include name="*.jar" />
+  </fileset>
+  </path>
+  <!-- 定义目标编译结果路径 -->
+  <property name="dist.home" value="./dist" />
+  <property name="dist.home.src" value="./dist/src" />
+  <property name="dist.home.libs" value="./dist/libs" />
+  <property name="dist.home.bin" value="./dist/bin" />
+  <!-- 定义源码路径  -->
+  <property name="project.home" value="./" />
+  <property name="project.home.src" value="./src" />
+  <property name="project.home.libs" value="./lib/swc" />
+ 
+  <!--完成当前构建任务所需的4个调用，首先是清理，如果bin下面有文件，删除掉；然后是编译，HTML包裹-->
+  <target name="build">
+  <antcall target="init"></antcall>
+  <antcall target="clean" />
+  <!-- <antcall target="confusion"></antcall> -->
+  <!-- <antcall target="compileFLP" /> -->
+  <antcall target="compile" />
+  <antcall target="wrapper" />
+  </target>
+  <target name="init">
+  <echo message="Ant Version: ${ant.version}">
+  </echo>
+  <echo message="Flex SDK Home: ${FLEX_HOME}" />
+  <!-- 为代码混淆和mxml编译做准备 -->
+  <!-- <delete dir="${dist.home}" />
+  <mkdir dir="${dist.home}" />
+  <copy todir="${dist.home.src}">
+  <fileset dir="${project.home.src}" />
+  </copy>
+  <copy todir="${dist.home.libs}">
+  <fileset dir="${project.home.libs}" />
+  </copy> -->
+  </target>
+  <!--执行清理-->
+  <target name="clean">
+  <delete includeemptydirs="true">
+  <fileset dir="${OUTPUT_DIR}" includes="**/*" />
+  </delete>
+  </target>
+  <!--混淆代码-->
+  
+  <target name="confusion" depends="clean">
+  <echo message="star confusion code..." />
+  <foreach list="" target="loop" param="file.full.name" delimiter=",">
+            <path>
+            <fileset dir="${dist.home.src}">
+                <include name="**/*.as"/>
+            </fileset>
+            </path>
+            
+        </foreach> 
+  </target>
+  <target name="loop">
+      <sequential>
+          <!-- confusion 不可用 -->
+  <confusion fileName="@{file.full.name}" />
+  <echo message="@{file.full.name} is confusioned!!" />
+  </sequential>
+  </target>
+  
+  <!-- 编译Flex Library Project项 -->
+  <target name="compileFLP" depends="clean">
+  <property name="project.name" value="BasicUtils" />
+  <echo message="star complie Flex Library Project..." />
+  <echo message="build ${dist.home.bin}/${project.name}.swc" />
+  <compc output="${dist.home.bin}/${project.name}.swc" debug="false" incremental="true">
+  <!-- 指定xwjnProjectFlex项目的源码目录 -->
+  <source-path path-element="${dist.home.src}" />
+  <!-- 指定编译的文件列表 -->
+  <include-sources dir="${dist.home.src}">
+  <include name="**/*.mxml" />
+  </include-sources>
+  <!-- 将Flex SDK 作为外部库进行引用 -->
+  <compiler.external-library-path dir="${FLEX_HOME}/frameworks">
+  <include name="**/*.swc" />
+  </compiler.external-library-path>
+  <!-- 添加项目中的SWC包,请注意这里是外部 -->
+  <compiler.external-library-path dir="${dist.home.libs}">
+  <include name="**/*.swc" />
+  </compiler.external-library-path>
+  </compc>
+  <!-- 删除缓存文件 -->
+  <delete>
+  <fileset dir="${dist.home.bin}" includes="*.cache" />
+  </delete>
+  <echo message="complier Flex Library Project finished!" />
+  </target>
+  
+  <!--执行编译，注意debug参数，默认是false，如果您需要开启Debug功能，可以将它设置为true(会增大文件体
+ 积)
+ http://blog.csdn.net/xys_777/article/details/6582815 mxmlc 参数说明
+ -->
+ <!-- <target name="compile" depends="compileFLP"> -->
+  <target name="compile">
+  <echo message="start compile code...">
+  </echo>
+  <mxmlc file="${SOURCE_DIR}/Main.as" output="${OUTPUT_DIR}/Main.swf" locale="${LOCALE}" static-rsls="true" 
+      accessible="true" debug="false" warnings="false">
+  <!-- 
+  使用自定义的sdk 配置文件,参数说明详见http://bbs.9ria.com/forum.php?mod=viewthread&tid=418328
+  需要将配置使用的文件地址指向${flexlib}/(变量mxmlc自带)
+  编译器参数在<compiler>中配置
+   -->
+  <load-config filename="./ant/flex-config.xml" />
+ <!--  <source-path path-element="${FLEX_HOME}/frameworks"/> -->
+  <source-path path-element="${LIB_SRC}" />
+  <source-path path-element="${SOURCE_DIR}" />
+
+  <library-path dir="${FLEX_HOME}/frameworks/locale/${LOCALE}" includes="*" append="true" />
+  <library-path dir="${LIBS_DIR}" includes="*" append="true" />
+  </mxmlc>
+  <!--
+  <for param="file">
+  <path>
+  <fileset dir="${flexsrc.dir}">
+  <include name="**/*.mxml" />
+  </fileset>
+  </path>
+  <sequential>
+  <propertyregex override="yes" property="compile.target.name" input="@
+ {file}" regexp="(.*)src(.*)(mxml)" replace="\1bin\2swf" />
+  <mxmlc file="@{file}" output="${compile.target.name}" 
+ services="${service.file}" context-root="${context.root}">
+  <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+  <static-link-runtime-shared-libraries>false</static-link-runtime-
+ shared-libraries>
+  <source-path path-element="${flexsrc.dir}" />
+  <compiler.incremental>true</compiler.incremental>
+  <compiler.debug>false</compiler.debug>
+ 
+  <compiler.external-library-path dir="${flexlib.dir}">
+  <include name="**/*.swc" />
+  </compiler.external-library-path>
+  </mxmlc>
+  <echo message="Compiled @{file} =====>>   ${compile.target.name}" />
+ 
+  </sequential>
+  </for>
+  -->
+  </target>
+  <!--执行对SWF进行HTML包裹，可以传递一些参数-->
+  <target name="wrapper">
+  <html-wrapper output="${OUTPUT_DIR}" file="Main.html" swf="Main" history="true" express-install="true" version-detection="true" version-major="10" version-minor="2" version-revision="0" 
+ height="100%" width="100%" title="Main" bgcolor="white" />
+  </target>
+  <target name="showMessage">
+  <echo>外部调用</echo>    
+  </target>
+ </project>

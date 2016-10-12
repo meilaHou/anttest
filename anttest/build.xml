@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?> 
+<project basedir="." default="usage" name="java_jar"> <!-- ====此处需要修改====工程名 --> 
+<!-- 工程名,没有被引用，可以不改 --> 
+      <property name="project-name" value="java_jar"/> <!-- ====此处需要修改====.jar文件名 --> 
+      <property name="libs" value="libs"/> <!-- lib--> 
+      <property name="src" value="src"/> <!-- src--> 
+      <property name="tar" value="build"/> <!-- bin --> 
+      <property name="jar-file-name" value="${project-name}.jar"/> 
+      <property name="main-class" value="Test"/> <!-- ====此处需要修改====main-class--> 
+
+      <path id="Third-Part Lib"> 
+            <fileset dir="${libs}"> 
+                  <include name="**/*.jar"/> 
+            </fileset> 
+      </path> 
+
+      <target description="Build file usage info (default task)" name="usage"> 
+            <echo message=" "/> 
+            <echo message="  ${project-name} "/> 
+            <echo message="-------------------------------------------------------"/> 
+            <echo message="  Available Targets:"/> 
+            <echo message="  compile    - Compiles the source code"/> 
+            <echo message="  clean      - Delete class files and .jar file"/> 
+            <echo message="  jar        - Generate an .jar for source code"/> 
+            <echo message="  run        - Execute Main-Class"/> 
+            <echo message="-------------------------------------------------------"/> 
+      </target> 
+<!-- 创建class文件复制目录 -->
+      <target name="prepare"> 
+            <mkdir dir="${tar}"/> 
+      </target> 
+<!-- 清楚class文件复制目录和生成的jar包 -->
+      <target name="clean"> 
+            <delete dir="${tar}"/> 
+            <delete file="${jar-file-name}"/> 
+      </target> 
+     <!-- copy java到创建的目录 -->
+    <target name="copy-res"> 
+        <copy todir="${tar}"> 
+            <fileset dir="${src}"> 
+                <exclude name="**/*.java"/> 
+            </fileset> 
+        </copy> 
+    </target> 
+<!-- 编译项目 -->
+      <target depends="clean,prepare,copy-res" name="compile"> 
+            <javac debug="true" deprecation="true" destdir="${tar}" failonerror="true" srcdir="${src}"> 
+                  <classpath refid="Third-Part Lib"/> 
+                  <!--给编译器指定编码，防止出现："警告： 编码 GBK 的不可映射字符"-->
+  				<compilerarg line="-encoding UTF-8 "/> 
+            </javac> 
+      </target> 
+      <!-- 
+       <target name="run" depends="jar"> 
+            <java jar="${jar-file-name}" fork="true" maxmemory="256m"/> 
+      </target> 
+
+      --> 
+        <!-- 注意：classpath="${tar}" 一定要加上，否则会报"java.lang.NoClassDefFoundError"的错误！--> 
+        <target depends="compile" name="runTest"> 
+            <java classname="${main-class}" classpath="${tar}" fork="true" maxmemory="256m"> 
+                  <classpath refid="Third-Part Lib"/> 
+                  <arg value="123"/>
+		           <arg value="name:hello"/>
+		           <arg value="age:1"/>
+		           <arg value="port:000"/> 
+            </java>
+      </target> 
+      <!-- 自定义任务，创建并赋值变量class-path
+      antutil 功能:
+       --> 
+<!--       <taskdef name="jarcp" classname="AntUtil"/>  -->
+<!--       <target name="class-path">  -->
+<!--           <echo>${libs}</echo> -->
+<!--         <jarcp lib="${libs}"/>  -->
+<!--         <echo>${class-path}</echo> -->
+<!--       </target>  -->
+
+      <target depends="compile" name="jar"> 
+            <jar basedir="${tar}" destfile="${jar-file-name}"> 
+                  <manifest> 
+                        <attribute name="Main-Class" value="${main-class}"/> 
+                        <attribute name="Class-Path" value=""/> 
+                  </manifest>
+            </jar>
+      </target> 
+</project> 

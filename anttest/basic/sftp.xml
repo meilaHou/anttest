@@ -1,0 +1,43 @@
+<?xml version="1.0"?>  
+  <project name="scp_file" default="scp_build" basedir=".">
+      <property file="./build.properties" />
+    <target name="scp-file">
+        <scp file="jar/fetch.jar" todir="uu:123@192.168.0.175:/home/uu/fetch" />
+    </target>
+   
+    <target name="scp-folder" depends="sshtest">
+            <scp todir="uu:123@192.168.0.175:/home/uu/fetch" >
+                 <fileset dir="jar"/>
+            </scp>
+    </target>
+    <!-- 连接sftp/scp服务�?操作本地和远程服务器文件 -->
+    <target name="r2l_file">
+        <scp file="${username}:${pwd}@${host}:${remoteDir}/classic/Index.swf" todir="./scp" port ="${port}"  trust ="true"  verbose ="true" SFTP="true"></scp>
+        <!-- 批量上传文件到服务器  -->
+    </target>
+    <target name="l2r_file">
+        <scp todir="${username}:${pwd}@${host}:${remoteDir}/classic" port ="${port}"  trust ="true"  verbose ="true">
+            <fileset dir="./scp">
+      			<include name="**/*.swf"/>
+    		</fileset>
+        </scp>
+    </target>
+    <!-- 连接服务�?执行服务器命�?-->
+    <target name="sshtest">
+        <sshexec host="${host}"
+        port = "${port}"
+		username="${username}"
+		password="${pwd}"
+		command="touch somefile;ls;df -h;"
+		trust="true"/>
+    </target>
+    <!-- 打开cmd执行cmd命令 -->
+    <target name="testexec">
+         <exec executable="cmd.exe">
+             <!-- 打开某文件夹 -->
+             <arg line="/c explorer  F:/workspace/VGameClient_v2.0/bin-debug/resource/global/zh_cn"/>
+<!--              <arg line="/c explorer F:/workspace/EGameClient6_config/内测更新/SWFEncrypt/SWFEncrypt.exe"> </arg> -->
+<!--              <arg line="/c start F:/workspace/EGameClient6_config/内测更新/SWFEncrypt/SWFEncrypt.exe"> </arg> -->
+         </exec>
+    </target>
+</project>
