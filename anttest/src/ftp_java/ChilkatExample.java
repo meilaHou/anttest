@@ -1,6 +1,10 @@
 package ftp_java;
 import com.chilkatsoft.*;
 //需要chilkat.jar ,并且将chilkat.dll加入到环境变量path类库中
+/*
+ * 处理ftp的各种通讯方式
+ * 
+ * */
 public class ChilkatExample {
 
   static {
@@ -26,9 +30,9 @@ public class ChilkatExample {
         return;
     }
 
-    ftp.put_Hostname("114.119.40.123");
-    ftp.put_Username("javaftp");
-    ftp.put_Password("hQaLbEzNh6eZinouoIrv");
+    ftp.put_Hostname("180.178.62.226");
+    ftp.put_Username("javaftp2");
+    ftp.put_Password("168TYFzmN4aY4j[JIAvJ");
     ftp.put_Port(9981);
 
     //  Establish an AUTH SSL secure channel after connection
@@ -56,7 +60,7 @@ public class ChilkatExample {
 
     //  Do whatever you're doing to do ...
     //  upload files, download files, etc...
-	Boolean sendfinsh = ftp.AppendFile("F:/workspace/EGameClient6_config/复制文件/C_1608240535.zip", "/client/C_1608240535.zip");
+	Boolean sendfinsh = ftp.AppendFile("F:/workspace/EGameClient6_config/复制文件/C_1608240535.zip", "/egameentrance/client/C_1608240535.zip");
 	if(sendfinsh){
 		System.out.println("文件上传完毕...");
 	}  

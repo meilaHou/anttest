@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="copy/ant.jar"/>
 	<classpathentry kind="lib" path="libs/java_ftp/chilkat.jar"/>
 	<classpathentry kind="lib" path="libs/commons-net-3.5.jar"/>
+	<classpathentry kind="lib" path="libs/java_sftp/jsch-0.1.54.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

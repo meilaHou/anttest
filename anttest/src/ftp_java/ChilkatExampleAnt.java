@@ -21,6 +21,7 @@ private String port;
 private String file;
 private String tofile;
 private String ip;
+private String printInfo = "false";
 //ant task 
   public void execute() throws BuildException { 
       try { 
@@ -42,12 +43,21 @@ private String ip;
         System.out.println(ftp.lastErrorText());
         return;
     }
-
+    //  If this example does not work, try using passive mode
+    //  by setting this to true.
+    //如果显式的使用了implicit 方式传送,文件会损坏
+    //ftp.put_Passive(false);//添加后,使用explicit ssl/tls (auth tls,auth ssl)
+    
     ftp.put_Hostname(ip);
     ftp.put_Username(username);
     ftp.put_Password(pwd);
     ftp.put_Port(Integer.parseInt(port));
-
+/*
+ * 
+ * put_AuthTls(true) 通过 auth tls
+ * put_Ssl(false) 
+ * 
+ * */
     //  Establish an AUTH SSL secure channel after connection
     //  on the standard FTP port 21.
     ftp.put_AuthTls(true);
@@ -66,14 +76,19 @@ private String ip;
         //  LastErrorText contains information even when
         //  successful. This allows you to visually verify
         //  that the secure connection actually occurred.
-        System.out.println(ftp.lastErrorText());
+    	if(printInfo.equals("true")){
+    		 System.out.println(ftp.lastErrorText());
+    	}
+       
     }
 
     System.out.println("Secure FTP Channel Established!");
 
     //  Do whatever you're doing to do ...
     //  upload files, download files, etc...
-	Boolean sendfinsh = ftp.AppendFile(file, tofile);
+    //http://read.pudn.com/downloads84/sourcecode/crypt/322549/include/CkFtp2.h__.htm ftp说明文档
+	//Boolean sendfinsh = ftp.AppendFile(file, tofile);//在ftp服务器上的文件追加
+	Boolean sendfinsh = ftp.PutFile(file, tofile);
 	if(sendfinsh){
 		System.out.println("文件上传完毕...");
 	}  
@@ -97,5 +112,8 @@ private String ip;
 	  }
 	  public void setIp(String ip){
 		  this.ip =  ip;
+	  }
+	  public void setPrintInfo(String printInfo){
+		  this.printInfo =  printInfo;
 	  }
 }

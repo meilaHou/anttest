@@ -86,8 +86,8 @@
             </jar>
       </target>
       <!-- java_jar.jar被引用后,ant不能操作删除他 -->
-      <taskdef name="javaftp" classname="ftp_java.${main-class}" classPath="${basedir}/java_jar.jar"/>
-      <target name="test_java_ftp">
-          <javaftp ip="114.119.40.123" username="javaftp" pwd="hQaLbEzNh6eZinouoIrv" port="9981" file="F:/workspace/EGameClient6_config/复制文件/C_1608240535.zip" tofile="/client/C_1608240535.zip"></javaftp>
-      </target>
+<!--       <taskdef name="javaftp" classname="ftp_java.${main-class}" classPath="${basedir}/java_jar.jar"/> -->
+<!--       <target name="test_java_ftp"> -->
+<!--           <javaftp ip="114.119.40.123" username="javaftp" pwd="hQaLbEzNh6eZinouoIrv" port="9981" file="F:/workspace/EGameClient6_config/复制文件/C_1608240535.zip" tofile="/client/C_1608240535.zip"></javaftp> -->
+<!--       </target> -->
 </project> 
